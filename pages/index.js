@@ -1,0 +1,69 @@
+import { useState, useEffect } from "react";
+import gsap from "gsap";
+import ScrollTrigger from "gsap/dist/ScrollTrigger";
+import Loader from "@/components/Loader/Loader";
+import Header from "@/components/Header/Header";
+import Menu from "@/components/Header/Menu/Menu";
+import ProgressIndicator from "@/components/ProgressIndicator/ProgressIndicator";
+import Cursor from "@/components/Cursor/Cursor";
+import Hero from "@/components/Hero/Hero";
+import Skills from "@/components/Skills/Skills";
+import Projects from "@/components/Projects/Projects";
+import { displayFancyLogs } from "utils/log";
+
+gsap.registerPlugin(ScrollTrigger);
+gsap.config({ nullTargetWarn: false });
+
+export default function Home() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [isDesktop, setIsDesktop] = useState(true);
+  const [clientHeight, setClientHeight] = useState(0);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 2600);
+
+    displayFancyLogs();
+
+    const { innerHeight, orientation, history } = window;
+    history.scrollRestoration = "manual";
+    setIsDesktop(
+      typeof orientation === "undefined" &&
+        navigator.userAgent.indexOf("IEMobile") === -1
+    );
+    setClientHeight(innerHeight);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <>
+      {isLoading ? (
+        <Loader />
+      ) : (
+        <>
+          <Header>
+            <Menu />
+          </Header>
+          <ProgressIndicator />
+          <Cursor isDesktop={isDesktop} />
+          <main className="flex flex-col">
+            <div
+              role="img"
+              className="text-gray-light-1 opacity-10 sm:text-9xl xs:text-8xl inline-block -z-10 absolute rotate-90 right-0 md:top-52 xs:top-96"
+            >
+            </div>
+            <div className="fixed top-0 left-0 h-screen w-screen -z-1" />
+            <Hero />
+            <Skills />
+            <Projects isDesktop={isDesktop} clientHeight={clientHeight} />
+          </main>
+          <footer className="w-full text-center py-4 text-gray-light-3 text-sm select-none">
+            © 2025–2026 Adriano. All rights reserved.
+          </footer>
+        </>
+      )}
+    </>
+  );
+}
